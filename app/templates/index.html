@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Gym Tracker</title>
+    <!-- IBM Carbon Design System -->
+    <link rel="stylesheet" href="https://unpkg.com/@carbon/styles@1.52.0/css/styles.min.css">
+    <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="cds--white">
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Gym Tracker</h1>
+            <nav id="nav-tabs">
+                <button class="nav-tab active" data-view="home">Home</button>
+                <button class="nav-tab" data-view="history">History</button>
+                <button class="nav-tab" data-view="stats">Stats</button>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Home View -->
+            <div id="home-view" class="view active">
+                <div id="active-session-banner" class="hidden">
+                    <p>Active workout in progress</p>
+                    <button class="cds--btn cds--btn--primary" id="continue-workout-btn">Continue Workout</button>
+                </div>
+                <div id="day-selector">
+                    <h2>Start Workout</h2>
+                    <div class="day-cards">
+                        <button class="day-card" data-day="1">
+                            <span class="day-number">Day 1</span>
+                            <span class="day-name">Lower Body</span>
+                        </button>
+                        <button class="day-card" data-day="2">
+                            <span class="day-number">Day 2</span>
+                            <span class="day-name">Upper Push</span>
+                        </button>
+                        <button class="day-card" data-day="3">
+                            <span class="day-number">Day 3</span>
+                            <span class="day-name">Upper Pull</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workout View -->
+            <div id="workout-view" class="view">
+                <div class="workout-header">
+                    <button class="back-btn" id="exit-workout-btn">&larr;</button>
+                    <h2 id="workout-title">Day 1: Lower Body</h2>
+                    <button class="cds--btn cds--btn--danger" id="finish-workout-btn">Finish</button>
+                </div>
+                <div id="exercises-container"></div>
+            </div>
+
+            <!-- History View -->
+            <div id="history-view" class="view">
+                <h2>Workout History</h2>
+                <div id="history-list"></div>
+            </div>
+
+            <!-- Stats View -->
+            <div id="stats-view" class="view">
+                <h2>Personal Records</h2>
+                <div id="pr-list"></div>
+            </div>
+
+            <!-- Session Detail View -->
+            <div id="session-detail-view" class="view">
+                <div class="workout-header">
+                    <button class="back-btn" id="back-to-history-btn">&larr;</button>
+                    <h2 id="session-detail-title">Session Details</h2>
+                </div>
+                <div id="session-detail-content"></div>
+            </div>
+
+            <!-- Exercise History View -->
+            <div id="exercise-history-view" class="view">
+                <div class="workout-header">
+                    <button class="back-btn" id="back-from-exercise-btn">&larr;</button>
+                    <h2 id="exercise-history-title">Exercise History</h2>
+                </div>
+                <div id="exercise-history-content"></div>
+            </div>
+        </main>
+
+        <!-- Rest Timer Modal -->
+        <div id="rest-timer-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Rest Timer</h3>
+                <div id="timer-display">0:00</div>
+                <div class="timer-buttons">
+                    <button class="cds--btn cds--btn--secondary" id="skip-timer-btn">Skip</button>
+                    <button class="cds--btn cds--btn--primary" id="add-time-btn">+30s</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Gallery Modal -->
+        <div id="image-gallery-modal" class="modal hidden">
+            <div class="gallery-content">
+                <button class="gallery-close" id="gallery-close-btn">&times;</button>
+                <h3 id="gallery-title">Exercise Form</h3>
+                <div class="gallery-container">
+                    <button class="gallery-nav gallery-prev" id="gallery-prev">&larr;</button>
+                    <div class="gallery-image-wrapper">
+                        <img id="gallery-image" src="" alt="">
+                        <p id="gallery-caption"></p>
+                    </div>
+                    <button class="gallery-nav gallery-next" id="gallery-next">&rarr;</button>
+                </div>
+                <div class="gallery-dots" id="gallery-dots"></div>
+            </div>
+        </div>
+
+        <!-- Confirm Dialog Modal -->
+        <div id="confirm-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="confirm-title">Confirm</h3>
+                <p id="confirm-message"></p>
+                <div class="confirm-buttons">
+                    <button class="cds--btn cds--btn--secondary" id="confirm-cancel-btn">Cancel</button>
+                    <button class="cds--btn cds--btn--danger" id="confirm-ok-btn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
