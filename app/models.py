@@ -15,6 +15,8 @@ class Exercise(Base):
     images = Column(JSON, default=list)  # Array of {url, caption} objects
     guide_url = Column(String(500))
     default_rest_sec = Column(Integer, default=90)
+    gif_url = Column(String(500))  # URL to animated GIF demonstration
+    form_notes = Column(Text)  # Detailed form instructions
 
     program_exercises = relationship("ProgramExercise", back_populates="exercise")
     set_logs = relationship("SetLog", back_populates="exercise")

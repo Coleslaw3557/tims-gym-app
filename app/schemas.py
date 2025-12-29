@@ -17,6 +17,8 @@ class ExerciseBase(BaseModel):
     images: list[Any] = []
     guide_url: Optional[str] = None
     default_rest_sec: int = 90
+    gif_url: Optional[str] = None
+    form_notes: Optional[str] = None
 
 
 class ExerciseResponse(ExerciseBase):

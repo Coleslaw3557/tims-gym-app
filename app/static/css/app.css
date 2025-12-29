@@ -249,6 +249,56 @@ body {
     margin-bottom: 1rem;
 }
 
+/* GIF display in expanded details */
+.exercise-gif-container {
+    margin: 1rem 0;
+    text-align: center;
+    background: var(--bg-input);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.exercise-gif-large {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+/* Form notes section */
+.form-notes-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--bg-input);
+    border-radius: 4px;
+    border-left: 3px solid var(--primary);
+}
+
+.form-notes-header {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-notes-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.form-notes-list li {
+    margin-bottom: 0.25rem;
+}
+
+.form-notes-list li:last-child {
+    margin-bottom: 0;
+}
+
 .exercise-link {
     display: inline-block;
     color: var(--primary);
@@ -459,7 +509,7 @@ body {
     color: #ffffff;
 }
 
-/* Rest Timer Modal */
+/* Modal Base */
 .modal {
     position: fixed;
     top: 0;
@@ -487,19 +537,6 @@ body {
 
 .modal-content h3 {
     margin: 0 0 1rem 0;
-}
-
-#timer-display {
-    font-size: 4rem;
-    font-weight: 300;
-    margin: 1.5rem 0;
-    font-variant-numeric: tabular-nums;
-}
-
-.timer-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
 }
 
 /* Carbon button overrides */

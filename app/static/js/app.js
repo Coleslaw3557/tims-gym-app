@@ -38,8 +38,6 @@ let state = {
     program: null,
     previousWeights: {},
     completedSets: new Set(),
-    timerInterval: null,
-    timerSeconds: 0,
     // Gallery state
     galleryImages: [],
     galleryIndex: 0,
@@ -172,6 +170,15 @@ async function loadWorkout(session) {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
 }
 
+// Format form notes into bullet points
+function formatFormNotes(notes) {
+    if (!notes) return '';
+    // Split by newlines and filter empty lines
+    const lines = notes.split('\n').filter(line => line.trim());
+    if (lines.length === 0) return '';
+    return `<ul class="form-notes-list">${lines.map(line => `<li>${line.trim()}</li>`).join('')}</ul>`;
+}
+
 // Render exercises
 function renderExercises(exercises, setLogs) {
     const container = document.getElementById('exercises-container');
@@ -180,8 +187,6 @@ function renderExercises(exercises, setLogs) {
     exercises.forEach((pe, idx) => {
         const ex = pe.exercise;
         const repsDisplay = pe.reps_max ? `${pe.reps_min}-${pe.reps_max}` : pe.reps_min;
-        const restSec = pe.rest_override || ex.default_rest_sec;
-        const restDisplay = restSec >= 60 ? `${Math.floor(restSec / 60)}:${(restSec % 60).toString().padStart(2, '0')}` : `${restSec}s`;
 
         // Get logged sets for this exercise
         const exerciseLogs = setLogs.filter(l => l.exercise_id === ex.id);
@@ -189,24 +194,36 @@ function renderExercises(exercises, setLogs) {
         // Get previous weights for this exercise
         const prevWeights = state.previousWeights[ex.id] || [];
 
-        // Store images data for gallery
-        const hasImages = ex.images && ex.images.length > 0;
+        // Use original image_url as thumbnail
+        const thumbnailImage = ex.image_url;
+        // GIF for the expanded detail view
+        const gifUrl = ex.gif_url;
 
         const card = document.createElement('div');
         card.className = 'exercise-card';
         card.innerHTML = `
             <div class="exercise-header" data-exercise-id="${ex.id}">
-                ${ex.image_url
-                    ? `<img src="${ex.image_url}" alt="${ex.name}" class="exercise-image ${hasImages ? 'exercise-image-clickable' : ''}" loading="lazy" data-exercise-id="${ex.id}" data-has-gallery="${hasImages}">`
+                ${thumbnailImage
+                    ? `<img src="${thumbnailImage}" alt="${ex.name}" class="exercise-image" loading="lazy">`
                     : `<div class="exercise-image-placeholder">No image</div>`
                 }
                 <div class="exercise-info">
                     <div class="exercise-name">${ex.name}</div>
-                    <div class="exercise-meta">${pe.sets} x ${repsDisplay} | Rest: ${restDisplay}</div>
+                    <div class="exercise-meta">${pe.sets} x ${repsDisplay}</div>
                 </div>
             </div>
             <div class="exercise-details" id="details-${ex.id}">
-                <p class="exercise-description">${ex.description || ''}</p>
+                ${gifUrl ? `
+                    <div class="exercise-gif-container">
+                        <img src="${gifUrl}" alt="${ex.name} demonstration" class="exercise-gif-large" loading="lazy">
+                    </div>
+                ` : ''}
+                ${ex.form_notes ? `
+                    <div class="form-notes-section">
+                        <div class="form-notes-header">Form</div>
+                        ${formatFormNotes(ex.form_notes)}
+                    </div>
+                ` : (ex.description ? `<p class="exercise-description">${ex.description}</p>` : '')}
                 ${pe.notes ? `<div class="exercise-notes">${pe.notes}</div>` : ''}
                 <div class="sets-container">
                     <div class="sets-header">
@@ -221,7 +238,7 @@ function renderExercises(exercises, setLogs) {
                         const prevWeight = prevWeights[i] || '';
                         const isCompleted = state.completedSets.has(`${ex.id}-${setNum}`);
                         return `
-                            <div class="set-row" data-exercise-id="${ex.id}" data-set="${setNum}" data-rest="${restSec}">
+                            <div class="set-row" data-exercise-id="${ex.id}" data-set="${setNum}">
                                 <div class="set-number">${setNum}</div>
                                 <input type="number" class="set-input weight-input ${isCompleted ? 'completed' : ''}"
                                        value="${log?.weight ?? prevWeight}"
@@ -237,8 +254,7 @@ function renderExercises(exercises, setLogs) {
                                        data-set="${setNum}">
                                 <button class="complete-set-btn ${isCompleted ? 'completed' : ''}"
                                         data-exercise-id="${ex.id}"
-                                        data-set="${setNum}"
-                                        data-rest="${restSec}">
+                                        data-set="${setNum}">
                                     ${isCompleted ? '&#10003;' : '&#10003;'}
                                 </button>
                             </div>
@@ -259,27 +275,12 @@ function renderExercises(exercises, setLogs) {
     // Event listeners for exercise headers (expand/collapse)
     container.querySelectorAll('.exercise-header').forEach(header => {
         header.addEventListener('click', (e) => {
-            // Don't toggle if clicking on image with gallery
-            if (e.target.classList.contains('exercise-image-clickable')) return;
-
             const exId = header.dataset.exerciseId;
             document.querySelectorAll('.exercise-details').forEach(d => {
                 if (d.id === `details-${exId}`) {
                     d.classList.toggle('expanded');
                 }
             });
-        });
-    });
-
-    // Event listeners for clickable images (open gallery)
-    container.querySelectorAll('.exercise-image-clickable').forEach(img => {
-        img.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const exId = parseInt(img.dataset.exerciseId);
-            const exercise = exercises.find(pe => pe.exercise.id === exId)?.exercise;
-            if (exercise && exercise.images && exercise.images.length > 0) {
-                openGallery(exercise.name, exercise.images);
-            }
         });
     });
 
@@ -296,7 +297,6 @@ function renderExercises(exercises, setLogs) {
 async function completeSet(btn) {
     const exerciseId = parseInt(btn.dataset.exerciseId);
     const setNum = parseInt(btn.dataset.set);
-    const restSec = parseInt(btn.dataset.rest);
     const row = btn.closest('.set-row');
     const weightInput = row.querySelector('.weight-input');
     const repsInput = row.querySelector('.reps-input');
@@ -321,73 +321,11 @@ async function completeSet(btn) {
         btn.classList.add('completed');
         weightInput.classList.add('completed');
         repsInput.classList.add('completed');
-
-        // Start rest timer
-        startRestTimer(restSec);
     } catch (e) {
         console.error('Error logging set:', e);
         alert('Failed to log set');
     }
 }
-
-// Rest Timer
-function startRestTimer(seconds) {
-    state.timerSeconds = seconds;
-    updateTimerDisplay();
-    document.getElementById('rest-timer-modal').classList.remove('hidden');
-
-    if (state.timerInterval) clearInterval(state.timerInterval);
-
-    state.timerInterval = setInterval(() => {
-        state.timerSeconds--;
-        updateTimerDisplay();
-
-        if (state.timerSeconds <= 0) {
-            clearInterval(state.timerInterval);
-            playTimerSound();
-            document.getElementById('rest-timer-modal').classList.add('hidden');
-        }
-    }, 1000);
-}
-
-function updateTimerDisplay() {
-    const mins = Math.floor(state.timerSeconds / 60);
-    const secs = state.timerSeconds % 60;
-    document.getElementById('timer-display').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-function playTimerSound() {
-    try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        gain.gain.value = 0.3;
-        osc.start();
-        osc.stop(ctx.currentTime + 0.2);
-        setTimeout(() => {
-            const osc2 = ctx.createOscillator();
-            osc2.connect(gain);
-            osc2.frequency.value = 880;
-            osc2.start();
-            osc2.stop(ctx.currentTime + 0.2);
-        }, 250);
-    } catch (e) {
-        console.log('Audio not available');
-    }
-}
-
-document.getElementById('skip-timer-btn').addEventListener('click', () => {
-    clearInterval(state.timerInterval);
-    document.getElementById('rest-timer-modal').classList.add('hidden');
-});
-
-document.getElementById('add-time-btn').addEventListener('click', () => {
-    state.timerSeconds += 30;
-    updateTimerDisplay();
-});
 
 // Exit workout
 document.getElementById('exit-workout-btn').addEventListener('click', () => {
