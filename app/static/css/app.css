@@ -224,6 +224,13 @@ body {
     color: var(--text-secondary);
 }
 
+.exercise-weight-hints {
+    font-size: 0.75rem;
+    color: var(--primary);
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
 .exercise-details {
     padding: 0 1rem 1rem;
     border-top: 1px solid var(--border);

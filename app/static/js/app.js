@@ -152,15 +152,23 @@ async function loadWorkout(session) {
     const dayProgram = await API.get(`/api/program/day/${session.day_type}`);
     state.program = dayProgram;
 
-    // Get previous weights
+    // Get previous weights and PRs in parallel
     try {
-        const prevWeights = await API.get(`/api/sessions/${session.id}/previous-weights`);
+        const [prevWeights, prData] = await Promise.all([
+            API.get(`/api/sessions/${session.id}/previous-weights`),
+            API.get('/api/stats/prs')
+        ]);
         state.previousWeights = {};
         prevWeights.forEach(pw => {
             state.previousWeights[pw.exercise_id] = pw.weights;
         });
+        state.prs = {};
+        prData.prs.forEach(pr => {
+            state.prs[pr.exercise_id] = { weight: pr.weight, reps: pr.reps };
+        });
     } catch (e) {
         state.previousWeights = {};
+        state.prs = {};
     }
 
     document.getElementById('workout-title').textContent = `Day ${session.day_type}: ${session.day_name}`;
@@ -194,22 +202,38 @@ function renderExercises(exercises, setLogs) {
         // Get previous weights for this exercise
         const prevWeights = state.previousWeights[ex.id] || [];
 
+        // Get PR and calculate last session's max weight
+        const pr = state.prs[ex.id];
+        const lastMaxWeight = prevWeights.length > 0 ? Math.max(...prevWeights.filter(w => w)) : null;
+
         // Use original image_url as thumbnail
         const thumbnailImage = ex.image_url;
         // GIF for the expanded detail view
         const gifUrl = ex.gif_url;
+        // Check if exercise has gallery images
+        const hasImages = ex.images && ex.images.length > 0;
+
+        // Build weight hints for header
+        let weightHints = '';
+        if (pr || lastMaxWeight) {
+            const hints = [];
+            if (pr) hints.push(`PR: ${pr.weight} lbs`);
+            if (lastMaxWeight) hints.push(`Last: ${lastMaxWeight} lbs`);
+            weightHints = `<div class="exercise-weight-hints">${hints.join(' · ')}</div>`;
+        }
 
         const card = document.createElement('div');
         card.className = 'exercise-card';
         card.innerHTML = `
             <div class="exercise-header" data-exercise-id="${ex.id}">
                 ${thumbnailImage
-                    ? `<img src="${thumbnailImage}" alt="${ex.name}" class="exercise-image" loading="lazy">`
+                    ? `<img src="${thumbnailImage}" alt="${ex.name}" class="exercise-image ${hasImages ? 'exercise-image-clickable' : ''}" loading="lazy" data-exercise-id="${ex.id}" data-has-gallery="${hasImages}">`
                     : `<div class="exercise-image-placeholder">No image</div>`
                 }
                 <div class="exercise-info">
                     <div class="exercise-name">${ex.name}</div>
                     <div class="exercise-meta">${pe.sets} x ${repsDisplay}</div>
+                    ${weightHints}
                 </div>
             </div>
             <div class="exercise-details" id="details-${ex.id}">
@@ -275,12 +299,26 @@ function renderExercises(exercises, setLogs) {
     // Event listeners for exercise headers (expand/collapse)
     container.querySelectorAll('.exercise-header').forEach(header => {
         header.addEventListener('click', (e) => {
+            // Don't toggle if clicking on image with gallery
+            if (e.target.classList.contains('exercise-image-clickable')) return;
             const exId = header.dataset.exerciseId;
             document.querySelectorAll('.exercise-details').forEach(d => {
                 if (d.id === `details-${exId}`) {
                     d.classList.toggle('expanded');
                 }
             });
+        });
+    });
+
+    // Event listeners for clickable images (open gallery)
+    container.querySelectorAll('.exercise-image-clickable').forEach(img => {
+        img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const exId = parseInt(img.dataset.exerciseId);
+            const exercise = exercises.find(pe => pe.exercise.id === exId)?.exercise;
+            if (exercise && exercise.images && exercise.images.length > 0) {
+                openGallery(exercise.name, exercise.images);
+            }
         });
     });
 
