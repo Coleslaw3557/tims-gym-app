@@ -1,0 +1,11 @@
+services:
+  gym-app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./images:/app/static/images
+    environment:
+      - DATABASE_URL=sqlite:///./data/gym.db
+    restart: unless-stopped
