@@ -31,3 +31,12 @@ Open http://localhost:8000
 - Set/rep/weight logging
 - PR tracking
 - Mobility exercises with duration-based tracking
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/workout.png" width="200" alt="Workout view">
+  <img src="docs/exercise-detail.png" width="200" alt="Exercise detail">
+  <img src="docs/history.png" width="200" alt="Workout history">
+  <img src="docs/stats.png" width="200" alt="Personal records">
+</p>
