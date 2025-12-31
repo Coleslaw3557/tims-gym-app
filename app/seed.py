@@ -2,26 +2,7 @@ from database import SessionLocal
 from models import Exercise, ProgramExercise
 
 EXERCISES = [
-    # Day 1 - Lower Body (Mobility)
-    {
-        "name": "Hip Flexor Stretch",
-        "description": "Kneel on one knee, back knee on pad. Tuck pelvis under (posterior tilt), squeeze glute of rear leg. Lean forward slightly until stretch in front of hip. Hold and breathe. Switch sides.",
-        "target_muscles": "Hip flexors, psoas, quads",
-        "image_url": "/static/images/thumbnails/hip-flexor-stretch.jpg",
-        "images": [
-            {"url": "/static/images/gifs/hip-flexor-stretch.gif", "caption": "Kneeling hip flexor stretch"},
-        ],
-        "guide_url": "https://www.acefitness.org/resources/everyone/exercise-library/142/kneeling-hip-flexor-stretch/",
-        "default_rest_sec": 30,
-        "gif_url": "/static/images/gifs/hip-flexor-stretch.gif",
-        "form_notes": "Keep torso upright. The glute squeeze is key - it creates reciprocal inhibition for a deeper hip flexor stretch. Don't arch lower back.",
-        "day": 1,
-        "sets": 2,
-        "reps_min": 30,
-        "reps_max": 45,
-        "notes": "Reps = seconds per side. Breathe deeply into the stretch.",
-        "category": "mobility",
-    },
+    # Day 1 - Lower Body (Dynamic Mobility)
     {
         "name": "90/90 Hip Switch",
         "description": "Sit with both legs at 90° angles. Front leg: shin parallel to torso. Back leg: shin perpendicular behind you. Rotate hips to switch legs, keeping chest tall. Control the transition.",
@@ -39,25 +20,6 @@ EXERCISES = [
         "reps_min": 8,
         "reps_max": 10,
         "notes": "Reps = total transitions (both directions). Great for squat hip mobility.",
-        "category": "mobility",
-    },
-    {
-        "name": "Ankle Mobility Drill",
-        "description": "Half-kneeling position facing wall, front foot 3-4 inches from wall. Drive knee forward over toes toward wall, keeping heel down. Hold at end range, return. Progress by moving foot further back.",
-        "target_muscles": "Ankles, calves, achilles",
-        "image_url": "/static/images/thumbnails/ankle-mobility.jpg",
-        "images": [
-            {"url": "/static/images/gifs/ankle-mobility.gif", "caption": "Ankle dorsiflexion drill"},
-        ],
-        "guide_url": "https://thebarbellphysio.com/best-ankle-mobility-exercises/",
-        "default_rest_sec": 30,
-        "gif_url": "/static/images/gifs/ankle-mobility.gif",
-        "form_notes": "Heel must stay on ground. Knee tracks over 2nd/3rd toe. Feel stretch in front of ankle and back of calf. No pain in joint.",
-        "day": 1,
-        "sets": 2,
-        "reps_min": 10,
-        "reps_max": 15,
-        "notes": "Reps per side. Critical for squat depth.",
         "category": "mobility",
     },
     # Day 1 - Lower Body (Strength)
@@ -169,26 +131,46 @@ EXERCISES = [
         "reps_max": 60,
         "notes": "Reps = seconds. Hips sagging = stop the set.",
     },
-    # Day 2 - Upper Push (Mobility)
+    # Day 1 - Lower Body (Static Mobility - Post Workout)
     {
-        "name": "Dead Hang",
-        "description": "Grip pull-up bar with overhand grip, shoulder-width or slightly wider. Let body hang fully, relax shoulders up toward ears, then actively depress. Breathe and let spine decompress.",
-        "target_muscles": "Shoulders, lats, grip, spine decompression",
-        "image_url": "/static/images/thumbnails/dead-hang.jpg",
+        "name": "Hip Flexor Stretch",
+        "description": "Kneel on one knee, back knee on pad. Tuck pelvis under (posterior tilt), squeeze glute of rear leg. Lean forward slightly until stretch in front of hip. Hold and breathe. Switch sides.",
+        "target_muscles": "Hip flexors, psoas, quads",
+        "image_url": "/static/images/thumbnails/hip-flexor-stretch.jpg",
         "images": [
-            {"url": "/static/images/gifs/dead-hang.gif", "caption": "Dead hang position"},
+            {"url": "/static/images/gifs/hip-flexor-stretch.gif", "caption": "Kneeling hip flexor stretch"},
         ],
-        "guide_url": "https://www.healthline.com/health/fitness-exercise/dead-hang",
+        "guide_url": "https://www.acefitness.org/resources/everyone/exercise-library/142/kneeling-hip-flexor-stretch/",
         "default_rest_sec": 30,
-        "gif_url": "/static/images/gifs/dead-hang.gif",
-        "form_notes": "Start with passive hang (shoulders by ears), then try active hang (shoulders pulled down). Both have benefits. Great for shoulder health and grip strength.",
-        "day": 2,
+        "gif_url": "/static/images/gifs/hip-flexor-stretch.gif",
+        "form_notes": "Keep torso upright. The glute squeeze is key - it creates reciprocal inhibition for a deeper hip flexor stretch. Don't arch lower back.",
+        "day": 1,
         "sets": 2,
         "reps_min": 30,
-        "reps_max": 60,
-        "notes": "Reps = seconds. Build up time gradually. Excellent for aerial work maintenance.",
+        "reps_max": 45,
+        "notes": "Reps = seconds per side. Breathe deeply into the stretch.",
         "category": "mobility",
     },
+    {
+        "name": "Ankle Mobility Drill",
+        "description": "Half-kneeling position facing wall, front foot 3-4 inches from wall. Drive knee forward over toes toward wall, keeping heel down. Hold at end range, return. Progress by moving foot further back.",
+        "target_muscles": "Ankles, calves, achilles",
+        "image_url": "/static/images/thumbnails/ankle-mobility.jpg",
+        "images": [
+            {"url": "/static/images/gifs/ankle-mobility.gif", "caption": "Ankle dorsiflexion drill"},
+        ],
+        "guide_url": "https://thebarbellphysio.com/best-ankle-mobility-exercises/",
+        "default_rest_sec": 30,
+        "gif_url": "/static/images/gifs/ankle-mobility.gif",
+        "form_notes": "Heel must stay on ground. Knee tracks over 2nd/3rd toe. Feel stretch in front of ankle and back of calf. No pain in joint.",
+        "day": 1,
+        "sets": 2,
+        "reps_min": 10,
+        "reps_max": 15,
+        "notes": "Reps per side. Critical for squat depth.",
+        "category": "mobility",
+    },
+    # Day 2 - Upper Push (Dynamic Mobility)
     {
         "name": "Thoracic Spine Rotation",
         "description": "Quadruped position, one hand behind head. Rotate thoracic spine to bring elbow toward ceiling, following elbow with eyes. Return to start. Keep hips square and stable throughout.",
@@ -354,7 +336,7 @@ EXERCISES = [
         "reps_max": 20,
         "notes": "Hip angle stays fixed. Only spine moves.",
     },
-    # Day 3 - Upper Pull (Mobility)
+    # Day 2 - Upper Push (Static Mobility - Post Workout)
     {
         "name": "Dead Hang",
         "description": "Grip pull-up bar with overhand grip, shoulder-width or slightly wider. Let body hang fully, relax shoulders up toward ears, then actively depress. Breathe and let spine decompress.",
@@ -367,13 +349,14 @@ EXERCISES = [
         "default_rest_sec": 30,
         "gif_url": "/static/images/gifs/dead-hang.gif",
         "form_notes": "Start with passive hang (shoulders by ears), then try active hang (shoulders pulled down). Both have benefits. Great for shoulder health and grip strength.",
-        "day": 3,
+        "day": 2,
         "sets": 2,
         "reps_min": 30,
         "reps_max": 60,
         "notes": "Reps = seconds. Build up time gradually. Excellent for aerial work maintenance.",
         "category": "mobility",
     },
+    # Day 3 - Upper Pull (Dynamic Mobility)
     {
         "name": "Thoracic Spine Rotation",
         "description": "Quadruped position, one hand behind head. Rotate thoracic spine to bring elbow toward ceiling, following elbow with eyes. Return to start. Keep hips square and stable throughout.",
@@ -522,24 +505,6 @@ EXERCISES = [
         "notes": "No swinging. Ego check the weight.",
     },
     {
-        "name": "Hammer Curl",
-        "description": "Neutral grip (palms facing each other). Curl up keeping wrist position fixed. Upper arms stay still. Squeeze at top, slow negative.",
-        "target_muscles": "Biceps, brachialis, forearms",
-        "image_url": "/static/images/hammer-curl.png",
-        "images": [
-            {"url": "/static/images/hammer-curl.png", "caption": "Neutral grip start"},
-            {"url": "/static/images/hammer-curl-2.jpg", "caption": "Curl phase"},
-            {"url": "/static/images/hammer-curl-3.jpg", "caption": "Top position"},
-        ],
-        "guide_url": None,
-        "default_rest_sec": 90,
-        "day": 3,
-        "sets": 3,
-        "reps_min": 12,
-        "reps_max": 15,
-        "notes": "Builds forearm and outer bicep thickness.",
-    },
-    {
         "name": "Hanging Leg Raise",
         "description": "Dead hang, arms straight. Raise legs until thighs parallel to floor (or higher). Lower with control. Minimize swing.",
         "target_muscles": "Abs, hip flexors",
@@ -556,6 +521,26 @@ EXERCISES = [
         "reps_min": 10,
         "reps_max": 15,
         "notes": "Bend knees if straight legs too hard. Control the swing.",
+    },
+    # Day 3 - Upper Pull (Static Mobility - Post Workout)
+    {
+        "name": "Dead Hang",
+        "description": "Grip pull-up bar with overhand grip, shoulder-width or slightly wider. Let body hang fully, relax shoulders up toward ears, then actively depress. Breathe and let spine decompress.",
+        "target_muscles": "Shoulders, lats, grip, spine decompression",
+        "image_url": "/static/images/thumbnails/dead-hang.jpg",
+        "images": [
+            {"url": "/static/images/gifs/dead-hang.gif", "caption": "Dead hang position"},
+        ],
+        "guide_url": "https://www.healthline.com/health/fitness-exercise/dead-hang",
+        "default_rest_sec": 30,
+        "gif_url": "/static/images/gifs/dead-hang.gif",
+        "form_notes": "Start with passive hang (shoulders by ears), then try active hang (shoulders pulled down). Both have benefits. Great for shoulder health and grip strength.",
+        "day": 3,
+        "sets": 2,
+        "reps_min": 30,
+        "reps_max": 60,
+        "notes": "Reps = seconds. Spinal decompression after heavy deadlifts.",
+        "category": "mobility",
     },
 ]
 
