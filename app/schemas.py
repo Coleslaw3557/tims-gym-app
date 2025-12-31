@@ -19,6 +19,7 @@ class ExerciseBase(BaseModel):
     default_rest_sec: int = 90
     gif_url: Optional[str] = None
     form_notes: Optional[str] = None
+    category: str = "strength"  # "strength" or "mobility"
 
 
 class ExerciseResponse(ExerciseBase):

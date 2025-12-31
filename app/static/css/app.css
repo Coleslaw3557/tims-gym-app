@@ -342,6 +342,15 @@ body {
     border-bottom: none;
 }
 
+/* Mobility exercise rows - simpler layout */
+.mobility-sets .sets-header {
+    grid-template-columns: 50px 1fr 0 60px;
+}
+
+.mobility-row {
+    grid-template-columns: 50px 1fr 0 60px;
+}
+
 .set-number {
     font-weight: 500;
     color: var(--text-secondary);

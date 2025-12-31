@@ -17,6 +17,7 @@ class Exercise(Base):
     default_rest_sec = Column(Integer, default=90)
     gif_url = Column(String(500))  # URL to animated GIF demonstration
     form_notes = Column(Text)  # Detailed form instructions
+    category = Column(String(50), default="strength")  # "strength" or "mobility"
 
     program_exercises = relationship("ProgramExercise", back_populates="exercise")
     set_logs = relationship("SetLog", back_populates="exercise")

@@ -213,9 +213,12 @@ function renderExercises(exercises, setLogs) {
         // Check if exercise has gallery images
         const hasImages = ex.images && ex.images.length > 0;
 
-        // Build weight hints for header
+        // Check if this is a mobility exercise
+        const isMobility = ex.category === 'mobility';
+
+        // Build weight hints for header (only for strength exercises)
         let weightHints = '';
-        if (pr || lastMaxWeight) {
+        if (!isMobility && (pr || lastMaxWeight)) {
             const hints = [];
             if (pr) hints.push(`PR: ${pr.weight} lbs`);
             if (lastMaxWeight) hints.push(`Last: ${lastMaxWeight} lbs`);
@@ -249,11 +252,11 @@ function renderExercises(exercises, setLogs) {
                     </div>
                 ` : (ex.description ? `<p class="exercise-description">${ex.description}</p>` : '')}
                 ${pe.notes ? `<div class="exercise-notes">${pe.notes}</div>` : ''}
-                <div class="sets-container">
+                <div class="sets-container ${isMobility ? 'mobility-sets' : ''}">
                     <div class="sets-header">
                         <div>Set</div>
-                        <div>Weight</div>
-                        <div>Reps</div>
+                        ${isMobility ? '<div>Duration</div>' : '<div>Weight</div>'}
+                        <div>${isMobility ? '' : 'Reps'}</div>
                         <div></div>
                     </div>
                     ${Array.from({ length: pe.sets }, (_, i) => {
@@ -261,28 +264,52 @@ function renderExercises(exercises, setLogs) {
                         const log = exerciseLogs.find(l => l.set_number === setNum);
                         const prevWeight = prevWeights[i] || '';
                         const isCompleted = state.completedSets.has(`${ex.id}-${setNum}`);
-                        return `
-                            <div class="set-row" data-exercise-id="${ex.id}" data-set="${setNum}">
-                                <div class="set-number">${setNum}</div>
-                                <input type="number" class="set-input weight-input ${isCompleted ? 'completed' : ''}"
-                                       value="${log?.weight ?? prevWeight}"
-                                       placeholder="${prevWeight || 'lbs'}"
-                                       inputmode="decimal"
-                                       data-exercise-id="${ex.id}"
-                                       data-set="${setNum}">
-                                <input type="number" class="set-input reps-input ${isCompleted ? 'completed' : ''}"
-                                       value="${log?.reps_completed ?? pe.reps_min}"
-                                       placeholder="${pe.reps_min}"
-                                       inputmode="numeric"
-                                       data-exercise-id="${ex.id}"
-                                       data-set="${setNum}">
-                                <button class="complete-set-btn ${isCompleted ? 'completed' : ''}"
-                                        data-exercise-id="${ex.id}"
-                                        data-set="${setNum}">
-                                    ${isCompleted ? '&#10003;' : '&#10003;'}
-                                </button>
-                            </div>
-                        `;
+
+                        if (isMobility) {
+                            // Mobility exercise: show duration/reps field and simple completion
+                            return `
+                                <div class="set-row mobility-row" data-exercise-id="${ex.id}" data-set="${setNum}" data-mobility="true">
+                                    <div class="set-number">${setNum}</div>
+                                    <input type="number" class="set-input reps-input ${isCompleted ? 'completed' : ''}"
+                                           value="${log?.reps_completed ?? pe.reps_min}"
+                                           placeholder="${pe.reps_min}${pe.notes?.includes('sec') ? 's' : ''}"
+                                           inputmode="numeric"
+                                           data-exercise-id="${ex.id}"
+                                           data-set="${setNum}">
+                                    <div></div>
+                                    <button class="complete-set-btn ${isCompleted ? 'completed' : ''}"
+                                            data-exercise-id="${ex.id}"
+                                            data-set="${setNum}"
+                                            data-mobility="true">
+                                        ${isCompleted ? '&#10003;' : '&#10003;'}
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            // Strength exercise: show weight and reps
+                            return `
+                                <div class="set-row" data-exercise-id="${ex.id}" data-set="${setNum}">
+                                    <div class="set-number">${setNum}</div>
+                                    <input type="number" class="set-input weight-input ${isCompleted ? 'completed' : ''}"
+                                           value="${log?.weight ?? prevWeight}"
+                                           placeholder="${prevWeight || 'lbs'}"
+                                           inputmode="decimal"
+                                           data-exercise-id="${ex.id}"
+                                           data-set="${setNum}">
+                                    <input type="number" class="set-input reps-input ${isCompleted ? 'completed' : ''}"
+                                           value="${log?.reps_completed ?? pe.reps_min}"
+                                           placeholder="${pe.reps_min}"
+                                           inputmode="numeric"
+                                           data-exercise-id="${ex.id}"
+                                           data-set="${setNum}">
+                                    <button class="complete-set-btn ${isCompleted ? 'completed' : ''}"
+                                            data-exercise-id="${ex.id}"
+                                            data-set="${setNum}">
+                                        ${isCompleted ? '&#10003;' : '&#10003;'}
+                                    </button>
+                                </div>
+                            `;
+                        }
                     }).join('')}
                 </div>
             </div>
@@ -336,14 +363,20 @@ async function completeSet(btn) {
     const exerciseId = parseInt(btn.dataset.exerciseId);
     const setNum = parseInt(btn.dataset.set);
     const row = btn.closest('.set-row');
+    const isMobility = btn.dataset.mobility === 'true';
     const weightInput = row.querySelector('.weight-input');
     const repsInput = row.querySelector('.reps-input');
 
-    const weight = parseFloat(weightInput.value) || null;
+    const weight = weightInput ? (parseFloat(weightInput.value) || null) : null;
     const reps = parseInt(repsInput.value) || null;
 
-    if (!weight || !reps) {
-        alert('Please enter weight and reps');
+    // Mobility exercises don't require weight
+    if (!isMobility && !weight) {
+        alert('Please enter weight');
+        return;
+    }
+    if (!reps) {
+        alert(isMobility ? 'Please enter duration/reps' : 'Please enter reps');
         return;
     }
 

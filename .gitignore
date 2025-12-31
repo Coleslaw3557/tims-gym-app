@@ -8,20 +8,36 @@ venv/
 .venv/
 env/
 .env
+*.egg-info/
+dist/
+build/
 
 # Database
 data/*.db
 *.db
+*.sqlite
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*.sublime-*
 
 # OS
 .DS_Store
 Thumbs.db
+*~
 
 # Docker
 .docker/
+
+# Claude Code
+.claude/
+
+# Logs
+*.log
+
+# Temp files
+tmp/
+temp/
